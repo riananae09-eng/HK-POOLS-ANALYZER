@@ -4,22 +4,20 @@ name: Build HK Pools Analyzer APK
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download project
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract project ZIP
+      - name: Extract project
         run: |
           mkdir extracted
-          unzip -q *.zip -d extracted
-          ls extracted/HK_POOLS_ANALYZER
+          unzip -q HK_POOLS_ANALYZER_project.zip -d extracted
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -30,18 +28,15 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android SDK
+      - name: Accept licenses and install SDK
         run: |
-          sdkmanager "platforms;android-35" "build-tools;35.0.0"
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.9'
+          yes | sdkmanager --licenses || true
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
 
       - name: Build APK
         run: |
-          gradle -p extracted/HK_POOLS_ANALYZER assembleDebug
+          cd extracted/HK_POOLS_ANALYZER
+          gradle assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
