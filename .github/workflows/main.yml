@@ -22,23 +22,22 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # ❌ Hapus baris chmod +x gradlew karena filenya belum ada
-      
       - name: Cek isi direktori
         run: ls -la
 
-      # Coba jalankan gradle wrapper langsung, atau gunakan gradle versi sistem
-      - name: Build Debug APK
+      - name: Build APK
         run: |
           if [ -f "gradlew" ]; then
             chmod +x gradlew
             ./gradlew assembleDebug
           else
-            gradle assembleDebug
+            echo "❌ File gradlew tidak ditemukan! Pastikan semua file proyek sudah diunggah."
+            exit 1
           fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: HK-Pools-Analyzer-APK
           path: app/build/outputs/apk/debug/app-debug.apk
