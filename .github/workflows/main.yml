@@ -22,11 +22,20 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      # ❌ Hapus baris chmod +x gradlew karena filenya belum ada
+      
+      - name: Cek isi direktori
+        run: ls -la
 
+      # Coba jalankan gradle wrapper langsung, atau gunakan gradle versi sistem
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: |
+          if [ -f "gradlew" ]; then
+            chmod +x gradlew
+            ./gradlew assembleDebug
+          else
+            gradle assembleDebug
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
